@@ -1,0 +1,29 @@
+name: API Schema Drift Check
+
+on:
+  pull_request:
+    paths:
+      - 'swagger/**'
+
+concurrency:
+  group: api-schema-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  schema-drift:
+    name: Check for API schema drift
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: delimit-ai/delimit-action@v1
+        with:
+          spec: swagger/swagger.json
